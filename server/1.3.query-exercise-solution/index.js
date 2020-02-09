@@ -1,44 +1,49 @@
 const { ApolloServer, gql } = require("apollo-server");
 
-// Return all languages when quering for languages
-// Return the specific language when searching with some arguments
+// Return all menuItems when quering for menuItems
+// Return the specific menuItem when searching with some arguments
 
-const languages = [
+const menuItems = [
   {
     id: 1,
-    name: "Go",
-    git: "https://github.com/golang/go"
+    name: "Idly",
+    price: 5
   },
   {
     id: 2,
-    name: "elixir",
-    git: "https://github.com/elixir-lang/elixir"
+    name: "Dosa",
+    price: 10
+  },
+  {
+    id: 3,
+    name: "White rice",
+    price: 30
   }
 ];
 
 const typeDefs = gql`
-  type Language {
+  type MenuItem {
     id: ID!
     name: String!
-    git: String
+    price: Int
   }
 
   type Query {
-    languages: [Language]
-    language(id: ID, name: String): Language
+    menuItems: [MenuItem]
+    menuItem(id: ID, name: String): MenuItem
   }
 `;
 
 const resolvers = {
   Query: {
-    languages: () => languages,
-    language: (_, { id, name }) => {
+    menuItems: () => menuItems,
+    menuItem: (_, { id, name }) => {
       if (id) {
-        return languages.find(language => language.id === id);
+        return menuItems.find(menuItem => menuItem.id === id);
       }
 
       if (name) {
-        return languages.find(language => language.name.includes(name));
+        return menuItems.find(menuItem => menuItem.name.includes(name));
       }
     }
   }

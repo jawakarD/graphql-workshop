@@ -3,15 +3,20 @@ const { ApolloServer, gql } = require("apollo-server");
 // Return all programmingLanguages when quering for programmingLanguages
 // Return the specific programmingLanguage when searching with some arguments
 
-const programmingLanguages = [
+const menuItems = [
   {
     id: 1,
-    name: "Go",
-    git: "https://github.com/golang/go"
+    name: "Idly",
+    price: 5
   },
   {
     id: 2,
-    name: "elixir",
-    git: "https://github.com/elixir-lang/elixir"
+    name: "Dosa",
+    price: 10
+  },
+  {
+    id: 3,
+    name: "White rice",
+    price: 30
   }
 ];
