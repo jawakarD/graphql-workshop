@@ -57,8 +57,8 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    menuItems: () => MenuItem.findAll(),
-    menuItem: (_, { id, name }) => {
+    menuItems: (parent, __, { menuItem }) => menuItem.findAll(),
+    menuItem: (_, { id, name }, { menuItem }) => {
       if (id) {
         return MenuItem.findByPk(id);
       }
@@ -69,16 +69,20 @@ const resolvers = {
     }
   },
   Mutation: {
-    addMenuItem: async (_, { params: { name, price, rating } }) => {
-      const menuItemCreated = await MenuItem.create({
+    addMenuItem: async (
+      _,
+      { params: { name, price, rating } },
+      { menuItem }
+    ) => {
+      const menuItemCreated = await menuItem.create({
         name,
         price
       });
 
       return menuItemCreated;
     },
-    deleteMenuItem: async (_, { id }) => {
-      const menuItemToDelete = await MenuItem.findByPk(id);
+    deleteMenuItem: async (_, { id }, { menuItem }) => {
+      const menuItemToDelete = await menuItem.findByPk(id);
       menuItemToDelete.destroy();
 
       return menuItemToDelete;
@@ -86,7 +90,11 @@ const resolvers = {
   }
 };
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: { menuItem: MenuItem }
+});
 
 server.listen().then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);

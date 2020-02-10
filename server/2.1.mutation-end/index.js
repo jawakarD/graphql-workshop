@@ -58,11 +58,11 @@ const resolvers = {
     menuItems: () => MenuItem.findAll(),
     menuItem: (_, { id, name }) => {
       if (id) {
-        return menuItems.findByPk(id);
+        return MenuItem.findByPk(id);
       }
 
       if (name) {
-        return menuItems.findOne({ where: { title: name } });
+        return MenuItem.findOne({ where: { name } });
       }
     }
   },
