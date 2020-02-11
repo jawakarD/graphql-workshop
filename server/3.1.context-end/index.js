@@ -76,7 +76,8 @@ const resolvers = {
     ) => {
       const menuItemCreated = await menuItem.create({
         name,
-        price
+        price,
+        rating
       });
 
       return menuItemCreated;

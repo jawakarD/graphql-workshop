@@ -1,23 +1,20 @@
 import React, { useMemo, useState } from "react";
+import { useQuery } from "@apollo/react-hooks";
+import gql from "graphql-tag";
 import "./App.css";
 
 const COLORS = ["#ff00f6", "#00ff50", "#fff900", "#ff8300"];
 const randomColor = () => COLORS[Math.floor(Math.random() * COLORS.length)];
 
-const menu = [
-  {
-    name: "Pizza",
-    price: 222
-  },
-  {
-    name: "Burger",
-    price: 121
-  },
-  {
-    name: "Food",
-    price: 71
+const GET_MENUS = gql`
+  query {
+    menuItems {
+      id
+      name
+      price
+    }
   }
-];
+`;
 
 const Form = () => (
   <form className="form">
@@ -55,6 +52,16 @@ const MenuItem = ({ name, price }) => {
 
 const App = () => {
   const [formOpen, setFormOpen] = useState(false);
+  const { loading, error, data } = useQuery(GET_MENUS);
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+  if (error) {
+    return <h1>error</h1>;
+  }
+
+  const { menuItems } = data;
+
   return (
     <div className="App">
       <div className="App-body">
@@ -64,7 +71,7 @@ const App = () => {
           {formOpen && <button type="button">Submit</button>}
         </div>
         <div className="menu-box">
-          {menu.map(item => (
+          {menuItems.map(item => (
             <MenuItem {...item} />
           ))}
         </div>

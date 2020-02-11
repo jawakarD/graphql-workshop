@@ -1,30 +1,23 @@
 import React, { useMemo, useState } from "react";
-import { useQuery } from "@apollo/react-hooks";
-import gql from "graphql-tag";
 import "./App.css";
 
 const COLORS = ["#ff00f6", "#00ff50", "#fff900", "#ff8300"];
 const randomColor = () => COLORS[Math.floor(Math.random() * COLORS.length)];
 
-const GET_MENUS = gql`
-  query {
-    menuItems {
-      id
-      name
-      price
-    }
+const menu = [
+  {
+    name: "Pizza",
+    price: 222
+  },
+  {
+    name: "Burger",
+    price: 121
+  },
+  {
+    name: "Food",
+    price: 71
   }
-`;
-
-const CREATE_MENU_ITEM = gql`
-  query {
-    menuItems {
-      id
-      name
-      price
-    }
-  }
-`;
+];
 
 const Form = () => (
   <form className="form">
@@ -53,7 +46,7 @@ const MenuItem = ({ name, price }) => {
       </div>
       <div className="action">
         <button type="button" style={{ color, borderColor: color }}>
-          Add
+          Delete
         </button>
       </div>
     </div>
@@ -61,27 +54,17 @@ const MenuItem = ({ name, price }) => {
 };
 
 const App = () => {
-  const [formOpen, setFormOpen] = useState(false);
-  const { loading, error, data } = useQuery(GET_MENUS);
-  if (loading) {
-    return <h1>Loading...</h1>;
-  }
-  if (error) {
-    return <h1>error</h1>;
-  }
-
-  const { menuItems } = data;
-
+  const { formOpen, setFormOpen } = useState(false);
   return (
     <div className="App">
       <div className="App-body">
         <div className="add-form">
-          <button onClick={() => setFormOpen(o => !o)}>Add Item</button>
+          <button onClick={() => setFormOpen(true)}>Add Item</button>
           {formOpen && <Form />}
           {formOpen && <button type="button">Submit</button>}
         </div>
         <div className="menu-box">
-          {menuItems.map(item => (
+          {menu.map(item => (
             <MenuItem {...item} />
           ))}
         </div>

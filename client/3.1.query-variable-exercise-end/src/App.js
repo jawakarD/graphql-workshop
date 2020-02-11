@@ -1,23 +1,29 @@
 import React, { useMemo, useState } from "react";
+import { useQuery, useMutation } from "@apollo/react-hooks";
+import gql from "graphql-tag";
 import "./App.css";
 
 const COLORS = ["#ff00f6", "#00ff50", "#fff900", "#ff8300"];
 const randomColor = () => COLORS[Math.floor(Math.random() * COLORS.length)];
 
-const menu = [
-  {
-    name: "Pizza",
-    price: 222
-  },
-  {
-    name: "Burger",
-    price: 121
-  },
-  {
-    name: "Food",
-    price: 71
+const GET_MENUS = gql`
+  query {
+    menuItems {
+      id
+      name
+    }
   }
-];
+`;
+
+const GET_ITEM_BY_ID = gql`
+  query getItemById($id: ID!) {
+    menuItem(id: $id) {
+      id
+      price
+      rating
+    }
+  }
+`;
 
 const Form = () => (
   <form className="form">
@@ -32,16 +38,33 @@ const Form = () => (
   </form>
 );
 
-const MenuItem = ({ name, price }) => {
+const MenuItem = ({ name, id }) => {
   const color = useMemo(() => randomColor(), []);
+  const { loading, error, data } = useQuery(GET_ITEM_BY_ID, {
+    variables: {
+      id
+    }
+  });
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+  if (error) {
+    return <h1>error</h1>;
+  }
+
+  const {
+    menuItem: { price, rating }
+  } = data;
+
   return (
     <div className="menu-item">
       <div className="info">
         <p className="name" style={{ color }}>
-          {name || "Pizza"}
+          {`${name} *${rating}`}
         </p>
         <p className="item-price" style={{ color }}>
-          {price || "120"}
+          {price}
         </p>
       </div>
       <div className="action">
@@ -55,6 +78,16 @@ const MenuItem = ({ name, price }) => {
 
 const App = () => {
   const [formOpen, setFormOpen] = useState(false);
+  const { loading, error, data } = useQuery(GET_MENUS);
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+  if (error) {
+    return <h1>error</h1>;
+  }
+
+  const { menuItems } = data;
+
   return (
     <div className="App">
       <div className="App-body">
@@ -64,7 +97,7 @@ const App = () => {
           {formOpen && <button type="button">Submit</button>}
         </div>
         <div className="menu-box">
-          {menu.map(item => (
+          {menuItems.map(item => (
             <MenuItem {...item} />
           ))}
         </div>
