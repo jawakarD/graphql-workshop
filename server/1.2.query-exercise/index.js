@@ -1,7 +1,8 @@
 const { ApolloServer, gql } = require("apollo-server");
 
-// Return all programmingLanguages when quering for programmingLanguages
-// Return the specific programmingLanguage when searching with some arguments
+// Return all items when quering for menuItems
+// Return the specific item when searching with some arguments
+// Good Luck!
 
 const menuItems = [
   {

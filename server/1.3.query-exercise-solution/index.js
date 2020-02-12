@@ -1,8 +1,5 @@
 const { ApolloServer, gql } = require("apollo-server");
 
-// Return all menuItems when quering for menuItems
-// Return the specific menuItem when searching with some arguments
-
 const menuItems = [
   {
     id: 1,

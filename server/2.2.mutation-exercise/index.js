@@ -27,7 +27,9 @@ const MenuItem = sequelize.define("menuItems", {
   }
 });
 
+// Creates the database with all the modals
 // MenuItem.sync();
+// Creates the database after dropping existing tables
 // MenuItem.sync({ force: true });
 
 const typeDefs = gql`

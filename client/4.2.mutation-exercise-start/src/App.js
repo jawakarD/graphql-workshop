@@ -100,7 +100,8 @@ const MenuItem = ({ name, id }) => {
     }
   });
 
-  // Implement Delete menu item using useMutation, Good luck!
+  // Create delete query string and implement Delete menu item using
+  // useMutation, Good luck!
 
   if (loading) {
     return <p>Loading...</p>;

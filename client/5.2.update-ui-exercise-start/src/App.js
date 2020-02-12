@@ -124,7 +124,9 @@ const MenuItem = ({ name, id }) => {
     }
   });
   const [deleteMenuItem] = useMutation(DELETE_MENU_ITEM);
+
   // Update the cache after deleting the item
+  // Good luck!
 
   if (loading) {
     return <p>Loading...</p>;

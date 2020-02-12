@@ -29,7 +29,9 @@ const Form = () => (
   </form>
 );
 
-const MenuItem = ({ name, price }) => {
+const MenuItem = ({ name }) => {
+  // Use useQuery with variables and pass id to get price and rating of a item
+  // Good luck!
   const color = useMemo(() => randomColor(), []);
   return (
     <div className="menu-item">
