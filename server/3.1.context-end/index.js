@@ -1,4 +1,4 @@
-require("dotenv").config({ path: "../.env" });
+require("dotenv").config({ path: "../.localenv" });
 const { ApolloServer, gql } = require("apollo-server");
 const { Sequelize, DataTypes } = require("sequelize");
 
@@ -6,36 +6,53 @@ const { DB_HOST, DB_USER, DB_PASS, DB, DB_PORT } = process.env;
 
 // connect to database
 const sequelize = new Sequelize(
-  `postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB}`,
-  {
-    ssl: true,
-    dialectOptions: {
-      ssl: true
-    }
-  }
+  `postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB}`
 );
 
-const MenuItem = sequelize.define("menuItems", {
+const MenuItem = sequelize.define("menuItem", {
   name: {
     type: DataTypes.STRING
   },
   price: {
-    type: DataTypes.INTEGER
+    type: DataTypes.FLOAT
   },
-  rating: {
+  category: {
+    type: DataTypes.STRING
+  }
+});
+
+const Review = sequelize.define("review", {
+  comment: {
+    type: DataTypes.STRING
+  },
+  authorId: {
     type: DataTypes.INTEGER
   }
 });
 
-// MenuItem.sync();
-// MenuItem.sync({ force: true });
+MenuItem.hasMany(Review, { foreignKey: "menuItemId", constraints: false });
+
+//MenuItem.sync();
+//Review.sync();
+//MenuItem.sync({ force: true });
+//Review.sync({ force: true });
 
 const typeDefs = gql`
+  type Review {
+    id: ID!
+    comment: String!
+    authorId: ID!
+  }
+
+  """
+  Menu item represents a single menu item with a set of datas
+  """
   type MenuItem {
     id: ID!
     name: String!
     price: Int
     rating: Int
+    reviews: [Review]
   }
 
   input MenuItemInput {
@@ -44,9 +61,16 @@ const typeDefs = gql`
     rating: Int
   }
 
+  input ReviewInput {
+    comment: String!
+    authorId: ID!
+    menuItemId: ID!
+  }
+
   type Mutation {
     addMenuItem(params: MenuItemInput): MenuItem
     deleteMenuItem(id: ID!): MenuItem
+    addReview(review: ReviewInput): Review
   }
 
   type Query {
@@ -57,14 +81,17 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    menuItems: (parent, __, { menuItem }) => menuItem.findAll(),
-    menuItem: (_, { id, name }, { menuItem }) => {
+    menuItems: (parent, __, { menuItem }) =>
+      menuItem.findAll({
+        include: [{ model: Review }]
+      }),
+    menuItem: async (_, { id, name }, { menuItem }) => {
       if (id) {
-        return MenuItem.findByPk(id);
+        return await MenuItem.findByPk(id);
       }
 
       if (name) {
-        return MenuItem.findOne({ where: { name } });
+        return await MenuItem.findOne({ where: { name } });
       }
     }
   },
@@ -74,13 +101,18 @@ const resolvers = {
       { params: { name, price, rating } },
       { menuItem }
     ) => {
-      const menuItemCreated = await menuItem.create({
+      return menuItem.create({
         name,
         price,
         rating
       });
-
-      return menuItemCreated;
+    },
+    addReview: async (_, { review: { comment, authorId, menuItemId } }) => {
+      return Review.create({
+        comment,
+        menuItemId,
+        authorId
+      });
     },
     deleteMenuItem: async (_, { id }, { menuItem }) => {
       const menuItemToDelete = await menuItem.findByPk(id);
